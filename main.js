@@ -198,6 +198,7 @@ async function run_neat(ctx) {
     const best_genome = await eval_genome(population, ctx)
 
     localStorage.setItem("best_genome", best_genome.toJSON())
+    alert("AI trained and best genome saved, You can run with ai now")
     
 }
 
