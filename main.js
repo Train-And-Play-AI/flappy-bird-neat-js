@@ -151,7 +151,7 @@ class Bird {
 class Pipe{
     constructor(x) {
         this.x = x
-        this.y = Util.getRandomNumber(100, settings.WIN_HEIGHT * 0.85 - settings.PIPE_GAP - 100)
+        this.y = Util.getRandomNumber(50, settings.WIN_HEIGHT * 0.85 - settings.PIPE_GAP - 50)
 
         this.passed = false
     }
