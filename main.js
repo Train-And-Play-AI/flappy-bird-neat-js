@@ -1,7 +1,7 @@
 
 const settings = {
     WIN_WIDTH: 500,
-    WIN_HEIGHT: 600,
+    WIN_HEIGHT: 550,
 
     BIRD_WIDTH: 20,
     BIRD_HEIGHT: 20,
