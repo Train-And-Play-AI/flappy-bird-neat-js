@@ -328,7 +328,7 @@ async function eval_genome(population, ctx) {
 
 
     population.evolve()
-    return eval_genome(population)
+    return eval_genome(population, ctx)
 
     
 }
