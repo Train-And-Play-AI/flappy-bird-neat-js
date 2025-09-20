@@ -142,7 +142,6 @@ class Bird {
             disp = -2
         }
 
-        console.log("disp=" + disp)
         this.y += disp
 
     }
@@ -444,20 +443,126 @@ async function play(config, best_genome, ctx) {
     }
 }
 
-window.onload = async function() {
-document.getElementById("train-ai-btn").addEventListener("click", train_ai)
-document.getElementById("run-ai-btn").addEventListener("click", run_with_ai)
+async function play_game(ctx) {
 
-await Util.loadAssets()
+	console.log("play"  + " - " + jump_bird)
+	let pipes = []
+    pipes.push(new Pipe(settings.WIN_WIDTH))
 
-const canvas = document.getElementById("canvas")
-canvas.width = settings.WIN_WIDTH
-canvas.height = settings.WIN_HEIGHT
-const ctx = canvas.getContext("2d")
+    let birds = []
+    let bird = new Bird(settings.BIRD_INIT_X, settings.BIRD_INIT_y)
+    birds.push(bird)
 
+    let run = true
+    let score = 0
+
+    while (run) {
+		console.log(jump_bird)
+		
+
+        let pipe_ind = 0
+
+        if(pipes.length > 1 && bird.x > pipes[0].x + settings.PIPE_WIDTH) {
+            pipe_ind = 1
+        }
+
+        if(jump_bird) {
+            bird.jump()
+        }
+
+        bird.move()
+
+        let add_pipe = false
+        let rem_pipes = []
+
+        for(let i = 0; i<pipes.length; i++) {
+            if(!pipes[i].passed && pipes[i].x < bird.x) {
+                add_pipe = true
+                pipes[i].passed = true
+
+                score += 1
+            }
+
+            if(pipes[i].collide(bird)) {
+               run = false
+            }
+        
+            pipes[i].move()
+
+            if(pipes[i].x <0) {
+                rem_pipes.push(pipes[i])
+            }
+        }
+
+        if(add_pipe) {
+            pipes.push(new Pipe(settings.WIN_WIDTH))
+        }
+
+        for(let i = 0; i < rem_pipes.length; i++) {
+            const pipe_idx = pipes.indexOf(rem_pipes[i])
+            if(pipe_idx > -1) {
+                pipes.splice(pipe_idx, 1)
+            }
+        }
+
+        if(bird.y  < 0 || bird.y > settings.WIN_HEIGHT * 0.85) {
+            run = false
+        }
+
+        
+        Util.draw_window(ctx, birds, pipes, score, 0, 0, true)
+        await Util.tick(settings.FPS)
+
+    }
 }
 
 
+let	jump_bird = false
+
+window.onload = async function() {
+	document.getElementById("play-urself").addEventListener("click", play_yourself, { once: true })
+	document.getElementById("train-ai-btn").addEventListener("click", train_ai)
+	document.getElementById("run-ai-btn").addEventListener("click", run_with_ai)
+
+	await Util.loadAssets()
+	
+	document.addEventListener("keydown", function(event) {
+		if(event.code === "Space") {
+			jump_bird = true			
+		}
+	})
+
+	document.addEventListener("keyup", function(event) {
+		if(event.code === "Space") {
+			jump_bird = false
+		}
+	})
+
+
+	document.addEventListener("touchstart", function(event) {
+		jump_bird = true		
+	})
+
+	document.addEventListener("touchend", function(event) {
+		jump_bird = false
+	})
+	
+
+	const canvas = document.getElementById("canvas")
+	canvas.width = settings.WIN_WIDTH
+	canvas.height = settings.WIN_HEIGHT
+	const ctx = canvas.getContext("2d")
+
+}
+
+function play_yourself() {
+	console.log("play urself")
+	canvas.width = settings.WIN_WIDTH
+	canvas.height = settings.WIN_HEIGHT
+	const ctx = canvas.getContext("2d")
+	
+	play_game(ctx, jump_bird)
+}
 
 function train_ai() {
 const canvas = document.getElementById("canvas")
